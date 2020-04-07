@@ -17,7 +17,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 # Contrib: Vijayenthiran
 # This example file shows to run a classifier on webcam stream. You need to
 # run the classifier.py to generate classifier with your own dataset.
