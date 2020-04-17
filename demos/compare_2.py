@@ -19,6 +19,10 @@
 # limitations under the License.
 
 import time
+import datetime
+import threading
+import glob
+import shutil
 
 start = time.time()
 
@@ -97,8 +101,49 @@ def getRep(imgPath):
         print("-----\n")
     return rep
 
-for (img1, img2) in itertools.combinations(args.imgs, 2):
+# compare single images
+def mv_files(mv_dir):
+  files = glob.glob('./output/*.png')
+  if len(files) > 0:
+    os.mkdir(mv_dir)
+    for f in files:
+      shutil.move(f, mv_dir)
+
+def worker():
+  try:
+    now = datetime.datetime.now()
+    print(now)
+    mv_dir = './output/' + str(now)
+    mv_files(mv_dir)
+
+    img1 = args.imgs[0]
+    img2 = args.imgs[1]
     d = getRep(img1) - getRep(img2)
-    print("Comparing {} with {}.".format(img1, img2))
-    print(
-        "  + Squared l2 distance between representations: {:0.3f}".format(np.dot(d, d)))
+    hit_log(now, img1, img2, np.dot(d,d))
+    # print("Comparing {} with {}.".format(img1, img2))
+    # print(
+    #     "  + Squared l2 distance between representations: {:0.3f}".format(np.dot(d, d)))
+    #time.sleep(8)
+  except :
+    #time.sleep(20)
+    print("error")
+
+def hit_log(date, img1, img2, v):
+  path_w = './output/test.txt'
+  with open(path_w, mode='a') as f:
+    f.write("{} {} {} {}\n".format(date, img1, img2, v))
+
+def schedular(interval, f, wait = True):
+  base_time = time.time()
+  next_time = 0
+  while True:
+    # t = threading.Thread(target = f)
+    # t.start()
+    # if wait:
+    #   t.join()
+    # next_time = ((base_time - time.time()) % interval) or interval
+    # time.sleep(next_time)
+    worker()
+    time.sleep(5)
+
+schedular(1, worker, False)
